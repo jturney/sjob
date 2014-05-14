@@ -6,7 +6,7 @@ import os
 import sys
 from subprocess import call
 from mako.template import Template
-from programs import cfour,molpro,psi4,qchem,nwchem
+from programs import cfour,molpro,psi4,qchem,nwchem,orca,gamess
 import yaml
 import socket
 
@@ -27,14 +27,14 @@ def dummy_footer(cluster):
     return ""
 
 checks = {
-           'cfour':  { 'check_input': cfour.check_input, 'footer': cfour.footer },
-           'cfour/1.0/parallel':  { 'check_input': cfour.check_input, 'footer': cfour.footer },
-           'cfour/1.0/serial':  { 'check_input': cfour.check_input, 'footer': cfour.footer },
-           'scfour': { 'check_input': cfour.check_input, 'footer': cfour.footer },
+           'cfour':  { 'check_input': cfour.check_input,  'footer': cfour.footer },
+           'scfour': { 'check_input': cfour.check_input,  'footer': cfour.footer },
+           'gamess': { 'check_input': gamess.check_input, 'footer': dummy_footer },
            'molpro': { 'check_input': molpro.check_input, 'footer': dummy_footer },
            'nwchem': { 'check_input': nwchem.check_input, 'footer': dummy_footer },
-           'qchem':  { 'check_input': qchem.check_input, 'footer': dummy_footer },
-           'psi':    { 'check_input': psi4.check_input, 'footer': dummy_footer } }
+           'qchem':  { 'check_input': qchem.check_input,  'footer': dummy_footer },
+           'orca' :  { 'check_input': orca.check_input,   'footer': dummy_footer },
+           'psi':    { 'check_input': psi4.check_input,   'footer': dummy_footer } }
 
 curdir = os.getcwd().split('/')[-1]
 scriptname = '%s.csh' % curdir
@@ -84,7 +84,8 @@ if args['input'] == None:
         args['input'] = 'input.dat'
 
 # Input Check
-checks[args['program']]['check_input'](args, nodeInfo[cluster_name]['queues'])
+base_program_name = args['program'].split('/')[0]
+checks[base_program_name]['check_input'](args, nodeInfo[cluster_name]['queues'])
 
 # Load Mako template file
 header_template = Template(filename=template_path+'header.tmpl')
@@ -130,7 +131,7 @@ script.write(program.render(nslot=args['nslot'],
 			    mppwidth=args['nslot'] * args['nnode'],
                             walltime=args['walltime']))
 
-script.write(checks[args['program']]['footer'](cluster_name))
+script.write(checks[base_program_name]['footer'](cluster_name))
 
 # make sure there are blank lines at the end
 script.write("\n\n")
