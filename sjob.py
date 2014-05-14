@@ -1,4 +1,3 @@
-#!/opt/python/2.7.3/bin/python
 #!/global/project/projectdirs/ccqc/python/hopper/gcc/bin/python
 
 import fnmatch
@@ -17,6 +16,8 @@ cluster_name = "vortex"
 if hostname == "vortex":
     cluster_name = "vortex"
 elif "hopper" in hostname:
+    cluster_name = "hopper"
+elif "edison" in hostname:
     cluster_name = "hopper"
 
 def dummy_check_input(args, nodeInfo):

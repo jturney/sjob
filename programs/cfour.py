@@ -48,7 +48,7 @@ def check_input(args,nodeInfo):
         jobMemory = convert_mem_units(jobMemory, "INTEGERWORDS")
     nodeMemLimit = nodeInfo[args['queue']]['nodeMem'] * 0.95 / args['nslot']
     if jobMemory > nodeMemLimit: # Check if memory is more than 90% of Node
-      error("Please reduce the memory of your job from "+str(jobMemory)+" MB to "+str(int(nodeMemLimit))+" MB or less for "+str(args['nslots'])+" processors")
+      error("Please reduce the memory of your job from "+str(jobMemory)+" MB to "+str(int(nodeMemLimit))+" MB or less for "+str(args['nslot'])+" processors")
     # If the user is performing a transition state search REQUIRE a FCMINT file.
     geomTS = find_job_item(keywords, ["GEO_METHOD"], False)
     if geomTS:
