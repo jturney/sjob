@@ -18,7 +18,7 @@ if hostname == "vortex":
 elif "hopper" in hostname:
     cluster_name = "hopper"
 elif "edison" in hostname:
-    cluster_name = "hopper"
+    cluster_name = "edison"
 
 def dummy_check_input(args, nodeInfo):
     pass
@@ -62,7 +62,7 @@ parser.add_argument('-q', '--queue', choices=queue_choices, required=True, help=
 parser.add_argument('-n', '--nslot', help='Set the number of processors to use per node.', type=int, default=0)
 parser.add_argument('--no-parse', action='store_false', dest='parseInput', default=True, help='Parse input file to detect common errors [default: parse]')
 
-if cluster_name == "hopper":
+if cluster_name == "hopper" or cluster_name == "edison":
   parser.add_argument('-A', '--account', help='Account to charge for time')
   parser.add_argument('-w', '--walltime', required=nodeInfo[cluster_name]['timelimit'], default='00:30:00', help="Maximum wallclock time for your job.")
   parser.add_argument('-c', '--nnode', help='Set the number of nodes to use.', type=int, default=1)
@@ -91,7 +91,7 @@ checks[base_program_name]['check_input'](args, nodeInfo[cluster_name]['queues'])
 header_template = Template(filename=template_path+'header.tmpl')
 
 extrapbscommands = ""
-if cluster_name == "hopper" and args['account']:
+if (cluster_name == "hopper" or cluster_name == "edison") and args['account']:
     extrapbscommands = "#PBS -A %s" % (args['account'])
 
 script = None
@@ -127,7 +127,7 @@ script.write(program.render(nslot=args['nslot'],
                             input=args['input'],
                             output=args['output'],
                             ncorepernode=nodeInfo[cluster_name]['queues'][args['queue']]['numProc'],
-			    nmpipersocket=args['nslot']/4,
+			    nmpipersocket=args['nslot']/2,
 			    mppwidth=args['nslot'] * args['nnode'],
                             walltime=args['walltime']))
 

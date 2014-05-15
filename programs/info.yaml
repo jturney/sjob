@@ -25,3 +25,12 @@ hopper:
         debug:
             nodeMem: 32768
             numProc: 24
+edison:
+    timelimit: True
+    queues:
+        regular:
+            nodeMem: 65536
+            numProc: 24
+        debug:
+            nodeMem: 65536
+            numProc: 24
